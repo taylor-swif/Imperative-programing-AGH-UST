@@ -4,12 +4,14 @@
 
 enum state { OK = 0, UNDERFLOW = -1, OVERFLOW = -2 };
 #define DECK_SIZE 52
-// Returns an integer from [a,b] using library function rand() and operator %
-// if a > b return INT_MIN
-// if b - a > RAND_MAX return INT_MAX
-// if a == b return a
-// else return integer from [a,b]
+
 int rand_from_interval(int a, int b) {
+
+    // Returns an integer from [a,b] using library function rand() and operator %
+    // if a > b return INT_MIN
+    // if b - a > RAND_MAX return INT_MAX
+    // if a == b return a
+    // else return integer from [a,b]
     if (a > b){
         return INT_MIN;
     }
@@ -44,14 +46,13 @@ void rand_permutation(int n, int array[]) {
 
 }
 int A[DECK_SIZE], B[DECK_SIZE], deck[DECK_SIZE];
-
 #define QUEUE_SIZE DECK_SIZE
 
-int stack_push(int array[], int in, int x) {
 
-    if (in_a < DECK_SIZE){
-        array[in] = x;
-        top++;
+int deck_push(int deck [], int card_num, int len) { // card_num enter the queue
+    
+    if (len < DECK_SIZE){
+        deck[len] = card_num;
         return OK;
     }
     else{
@@ -59,46 +60,17 @@ int stack_push(int array[], int in, int x) {
     }
 }
 
-
-int queue_push(int in_nr) { // in_nr clients try to enter the queue
-    int in_nr_copy = in_nr;
-    if (in < QUEUE_SIZE){
-        while(in < QUEUE_SIZE && in_nr > 0){
-            queue[in] = curr_nr++ + 1;
-            in_nr--;
-            in++;
-        }
-        if (in_nr > 0){
-            curr_nr += in_nr;
-            return OVERFLOW;
-        }
-    }
-    else{
-        curr_nr += in_nr;
-    }
-}
-
-int queue_pop(int out_nr) {
-    if (out_nr > in){
-        in = 0;
-        for(int i = 0; i < out_nr; i++){
-            for(int i = 0; i < QUEUE_SIZE-1; i++){
-                queue[i] = queue[i+1];
-            }
-        }
-
+int deck_pop(int array[], len) {
+    if (len ==0 ){
         return UNDERFLOW;
     }
-
-    for(int i = 0; i < out_nr; i++){
-        for(int i = 0; i < QUEUE_SIZE-1; i++){
-            queue[i] = queue[i+1];
+    else{
+        for(int i = 0; i < len-1; i++){
+            array[i] = array[i+1];
         }
     }
-    in -= out_nr;
-    return in;
-
 }
+
 void divide(int A[], int B[], int deck[]){
     for (int i = 0; i < DECK_SIZE/2; i++){
         A[i] = deck[i];
@@ -121,26 +93,34 @@ int compare(int a, int b){
 }
 
 int war0(int n){
-    int in_a = DECK_SIZE/2;
-    int in_b = DECK_SIZE/2;
-    int table[DECK_SIZE];
+    int len_a = 26;
+    int len_b = 26;
+    //int table[DECK_SIZE];
 
 
-    while (n > 0 && in_a > 0 && in_b > 0){
+    while (n > 0 && len_a > 0 && len_b > 0){
         int res = compare(A[0], B[0]);
         if (res == 1){
-            push(B, A[0]);
-            pop(A)
+            deck_push(B, A[0], len_b);
+            deck_pop(A, len_a);
+            
         }
         else if (res == -1){
-            push(A, B[0]);
-            pop(B);
+            deck_push(A, B[0], len_a);
+            deck_pop(B, len_b);
         }
         else{
 
         }
 
     }
+    if (len_a == 0){
+        printf("Wygrał gracz A");
+    }
+    else if (len_b == 52){
+        printf("Wygrał gracz B");
+    }
+    return 0;
 
 
 }
@@ -150,7 +130,7 @@ int main(void) {
     int to_do = 1, seed;
     int n;
 
-    scanf("%d %d", &seed, &to_do, &n);
+    scanf("%d %d %d ", &seed, &to_do, &n);
     srand((unsigned) seed); // set the seed
 
     switch(to_do) {
