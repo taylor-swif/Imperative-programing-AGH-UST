@@ -181,10 +181,9 @@ void war0(int n){
         else{
             int c = warwar();
             if (c < 0){
-                printf("yyy\n");
-                printf("%d ", c);
-                printf("%d \n", len_a);
-                printf("%d \n", len_b);
+                printf("1");
+                printf("%d ", len_a);
+                printf("%d ", len_b);
                 return;
                 
             }
