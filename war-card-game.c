@@ -15,16 +15,13 @@ int rand_from_interval(int a, int b) {
     // if a == b return a
     // else return integer from [a,b]
     if (a > b){
-        printf("dupa");
         return INT_MIN;
     }
     else if (b - a > RAND_MAX){
-        printf("dupa");
 
         return INT_MAX;
     }
     else if (a == b){
-        printf("kupa");
         return a;
     }
     else{
@@ -55,8 +52,8 @@ int A[DECK_SIZE], B[DECK_SIZE];
 int deck[DECK_SIZE];
 //int A[] = {35, 21, 10, 8, 16, 23, 25, 0, 14, 32, 2, 1, 39, 5, 9, 19 ,45, 30, 24, 22, 3 ,17, 12, 11, 26, 4, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 //int B[] = {42, 43, 13, 20, 48, 33, 46, 18, 41, 31, 34, 49, 37, 27, 47, 28, 44, 36, 38, 29, 6, 50, 40, 15, 51, 7, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-int len_a = 26;
-int len_b = 26;
+int len_a = DECK_SIZE/2;
+int len_b = DECK_SIZE/2;
 //int A[] = {51, 41, 31, 47, 49, 29, 21, 38, 43, 24, 11, 5 ,16, 32, 25, 33, 36 ,30, 45, 19 ,44 ,42 ,40 ,50 ,10 ,37 };
 //int B[] = {34, 14, 28, 8, 7 ,2 ,46 ,17 ,13, 0 ,26 ,18, 15, 48, 1, 20 ,12 ,23 ,22, 6, 4, 39, 27,3, 9, 35 };
 #define QUEUE_SIZE DECK_SIZE
@@ -78,8 +75,6 @@ void printf_tab1(int arr[], int len){
     for (int i = 0; i < len; i++){
         printf("%d ", arr[i]);
     }
-    // printf("\n");
-    // printf("----------------------\n");
 }
 int deck_push(int deck [], int card_num, int len) { // card_num enter the queue
     
@@ -133,16 +128,13 @@ int warwar(void){
     }else{
         minimum = len_b;
     }
-    int won = -1;
+    int win = -1;
     int cnt = 0;
-    //printf("wojna start\n");
+    
     for (int i = 2; i <minimum; i += 2){
-        won = compare(A[i], B[i]);
-        //printf("wojna i: %d\n", i);
-        //printf_tab();
-        //printf("%d ", len_a);
-        //printf("%d \n", len_b);
-        if ( won == 1){
+        win = compare(A[i], B[i]);
+
+        if ( win == 1){
             for (int j = 0; j < i+1; j++){
             deck_push(B, B[0], len_b);
             len_b++;
@@ -156,7 +148,7 @@ int warwar(void){
             len_a--;
             }
             break;
-        }else if(won == -1){
+        }else if(win == -1){
             for (int j = 0; j < i+1; j++){
             deck_push(A, A[0], len_a);
             len_a++;
@@ -174,10 +166,8 @@ int warwar(void){
         }
         cnt++;
     }
-    //printf("doszlo do wojny\n");
-    if (won == 0){
+    if (win == 0){
         return -1;
-        //printf("taki przypadek");
     }
     return cnt;
 }
@@ -188,8 +178,7 @@ void war0(int n){
 
     while (n > 0 && len_a > 0 && len_b > 0){
         int res = compare(A[0], B[0]);
-        // printf("flaga\n");
-        // printf_tab();
+
         if (res == 1){
             deck_push(B, B[0], len_b);
             len_b++;
@@ -225,21 +214,15 @@ void war0(int n){
             }
             
         }
-        // printf("------------\n");
-        // printf_tab(A, len_a);
-        // printf_tab(B, len_b);
+
         n--;
 
     }
-    //printf("koniec\n");
+
     if (n == 0){
         printf("1\n");
         printf("%d ", len_a);
         printf("%d ", len_b);
-        /*printf("------------\n");
-        printf_tab(A, len_a);
-        printf_tab(B, len_b);*/
-
     }
     else if (len_a == DECK_SIZE){
         printf("2 ");
@@ -249,19 +232,7 @@ void war0(int n){
         printf("3\n");
         printf_tab1(B, len_b);
     }
-    else{
-        
-        printf("else\n");
-        printf("%d \n", n_copy-n);
-        printf("%d ", len_a);
-        printf("%d ", len_b);
-      //  printf_tab(A, len_a);
-      //  printf_tab(B, len_b);
-        
-    }
-    //printf_tab();
-            
-   // printf("ilosc zagranych %d \n", n_copy-n);
+
 }
 void war1(int n){
 
@@ -270,7 +241,6 @@ void war1(int n){
 
     while (n > 0 && len_a > 0 && len_b > 0){
         int res = compare(A[0], B[0]);
-        // printf("flaga\n");
         if (res == 1){
             deck_push(B, B[0], len_b);
             len_b++;
@@ -303,7 +273,6 @@ void war1(int n){
             len_b--;
             
         }
-
         n--;
 
     }
@@ -331,16 +300,10 @@ int main(void) {
     int to_do, seed;
     int n;
 
-
-    //printf_tab(A, len_a);
-    //printf_tab(B, len_b);
-
     scanf("%d %d %d", &seed, &to_do, &n);
     srand((unsigned) seed); // set the seed
     rand_permutation(DECK_SIZE, deck);
     divide(A, B, deck);
-    //printf_tab();
-    // 16050 0 100
     switch(to_do) {
         case 0:
             war0(n);
