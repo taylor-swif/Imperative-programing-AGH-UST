@@ -15,16 +15,13 @@ int rand_from_interval(int a, int b) {
     // if a == b return a
     // else return integer from [a,b]
     if (a > b){
-        printf("dupa");
         return INT_MIN;
     }
     else if (b - a > RAND_MAX){
-        printf("dupa");
 
         return INT_MAX;
     }
     else if (a == b){
-        printf("kupa");
         return a;
     }
     else{
@@ -53,12 +50,9 @@ void rand_permutation(int n, int array[]) {
 }
 int A[DECK_SIZE], B[DECK_SIZE]; 
 int deck[DECK_SIZE];
-//int A[] = {35, 21, 10, 8, 16, 23, 25, 0, 14, 32, 2, 1, 39, 5, 9, 19 ,45, 30, 24, 22, 3 ,17, 12, 11, 26, 4, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-//int B[] = {42, 43, 13, 20, 48, 33, 46, 18, 41, 31, 34, 49, 37, 27, 47, 28, 44, 36, 38, 29, 6, 50, 40, 15, 51, 7, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int len_a = 26;
 int len_b = 26;
-//int A[] = {51, 41, 31, 47, 49, 29, 21, 38, 43, 24, 11, 5 ,16, 32, 25, 33, 36 ,30, 45, 19 ,44 ,42 ,40 ,50 ,10 ,37 };
-//int B[] = {34, 14, 28, 8, 7 ,2 ,46 ,17 ,13, 0 ,26 ,18, 15, 48, 1, 20 ,12 ,23 ,22, 6, 4, 39, 27,3, 9, 35 };
+
 #define QUEUE_SIZE DECK_SIZE
 
 void printf_tab(void){
@@ -233,7 +227,7 @@ void war0(int n){
     }
     //printf("koniec\n");
     if (n == 0){
-        printf("1\n");
+        printf("1 ");
         printf("%d ", len_a);
         printf("%d ", len_b);
         /*printf("------------\n");
@@ -340,7 +334,6 @@ int main(void) {
     rand_permutation(DECK_SIZE, deck);
     divide(A, B, deck);
     //printf_tab();
-    // 16050 0 100
     switch(to_do) {
         case 0:
             war0(n);
