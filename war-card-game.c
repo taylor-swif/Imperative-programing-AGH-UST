@@ -5,15 +5,8 @@
 enum state { OK = 0, UNDERFLOW = -1, OVERFLOW = -2 };
 #define DECK_SIZE 52
 
-
-
 int rand_from_interval(int a, int b) {
 
-    // Returns an integer from [a,b] using library function rand() and operator %
-    // if a > b return INT_MIN
-    // if b - a > RAND_MAX return INT_MAX
-    // if a == b return a
-    // else return integer from [a,b]
     if (a > b){
         return INT_MIN;
     }
@@ -48,29 +41,15 @@ void rand_permutation(int n, int array[]) {
     }
 
 }
+
 int A[DECK_SIZE], B[DECK_SIZE]; 
 int deck[DECK_SIZE];
-//int A[] = {35, 21, 10, 8, 16, 23, 25, 0, 14, 32, 2, 1, 39, 5, 9, 19 ,45, 30, 24, 22, 3 ,17, 12, 11, 26, 4, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-//int B[] = {42, 43, 13, 20, 48, 33, 46, 18, 41, 31, 34, 49, 37, 27, 47, 28, 44, 36, 38, 29, 6, 50, 40, 15, 51, 7, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
 int len_a = DECK_SIZE/2;
 int len_b = DECK_SIZE/2;
-//int A[] = {51, 41, 31, 47, 49, 29, 21, 38, 43, 24, 11, 5 ,16, 32, 25, 33, 36 ,30, 45, 19 ,44 ,42 ,40 ,50 ,10 ,37 };
-//int B[] = {34, 14, 28, 8, 7 ,2 ,46 ,17 ,13, 0 ,26 ,18, 15, 48, 1, 20 ,12 ,23 ,22, 6, 4, 39, 27,3, 9, 35 };
 #define QUEUE_SIZE DECK_SIZE
 
-void printf_tab(void){
-    for (int i = 0; i < len_a; i++){
-        printf("%d ", A[i]);
-    }
-    printf("\n");
-    for (int i = 0; i < len_b; i++){
-        printf("%d ", B[i]);
-    }
-    printf("\n");
-    printf("----------------------\n");
-}
-
-void printf_tab1(int arr[], int len){
+void printf_tab(int arr[], int len){
 
     for (int i = 0; i < len; i++){
         printf("%d ", arr[i]);
@@ -119,7 +98,6 @@ int compare(int a, int b){
     return -1;
 
 }
-
 
 int warwar(void){
     int minimum;
@@ -209,7 +187,8 @@ void war0(int n){
                 printf("%d \n", len_b);
                 return;
                 
-            }else{
+            }
+            else{
                 n -= c;
             }
             
@@ -220,7 +199,7 @@ void war0(int n){
     }
 
     if (n == 0){
-        printf("1\n");
+        printf("1 ");
         printf("%d ", len_a);
         printf("%d ", len_b);
     }
@@ -230,14 +209,13 @@ void war0(int n){
     }
     else if (len_b == DECK_SIZE){
         printf("3\n");
-        printf_tab1(B, len_b);
+        printf_tab(B, len_b);
     }
-
 }
+
 void war1(int n){
 
     int n_copy = n;
-
 
     while (n > 0 && len_a > 0 && len_b > 0){
         int res = compare(A[0], B[0]);
@@ -277,7 +255,7 @@ void war1(int n){
 
     }
     if (n == 0){
-        printf("0\n");
+        printf("0 ");
         printf("%d ", len_a);
         printf("%d ", len_b);
 
@@ -288,13 +266,12 @@ void war1(int n){
     }
     else if (len_b == DECK_SIZE){
         printf("3\n");
-        printf_tab1(B, len_b);
+        printf_tab(B, len_b);
     }
     else{
         printf("4\n");
     }
 }
-
 
 int main(void) {
     int to_do, seed;
