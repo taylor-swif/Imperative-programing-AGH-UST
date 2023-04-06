@@ -10,9 +10,6 @@
 #define MAX_CHARS (LAST_CHAR - FIRST_CHAR)
 #define MAX_BIGRAMS ((LAST_CHAR - FIRST_CHAR) * (LAST_CHAR - FIRST_CHAR))
 
-#define MAX_DIGRAMS ((LAST_CHAR - FIRST_CHAR) * (LAST_CHAR - FIRST_CHAR))
-
-
 #define NEWLINE '\n'
 #define IN_WORD 1
 
@@ -40,18 +37,6 @@ int cmp_di (const void *a, const void *b) {
     // sort according to first char if counts equal
     if (count[va] == count[vb]) return va / MAX_CHARS - vb / MAX_CHARS;
     return count[vb] - count[va];
-}
-int compare_idx(const void* a, const void* b)
-{
-    int arg1 = *(const int*)a;
-    int arg2 = *(const int*)b;
-
-    if (arg1 < arg2) return -1;
-    if (arg1 > arg2) return 1;
-    return 0;
-
-    // return (arg1 > arg2) - (arg1 < arg2); // possible shortcut
-    // return arg1 - arg2; // erroneous shortcut (fails if INT_MIN is present)
 }
 
 bool is_char(char c) {
@@ -92,91 +77,89 @@ void swap(int *a, int *b) {
     *a = *b;
     *b = temp;
 }
+void print_tab(int A[], int n){
+    printf("---\n");
+    for (int i = 0; i < n; i++){
+        printf("%d ", A[i]);
+    }
+    printf("\n");
+
+}
+
 void char_count(int char_no, int *n_char, int *cnt) {
     char line[MAX_LINE];
-    int chars[LAST_CHAR - FIRST_CHAR] = {0};
-    int indexes[LAST_CHAR - FIRST_CHAR];
+    int indices[MAX_CHARS];
 
-    for (int i = 0; i < LAST_CHAR - FIRST_CHAR; ++i){
-        indexes[i] = i;
+    for (int i = 0; i < MAX_CHARS; ++i){
+        indices[i] = i;
     }
 
     while (fgets(line, MAX_LINE, stdin)){
         for (int i = 0; i < strlen(line); ++i) {
             if (is_char(line[i])) {
-                chars[line[i] - FIRST_CHAR] += 1;
+                count[line[i] - FIRST_CHAR] += 1;
             }
         }
     }
-    for (int i = 0; i < LAST_CHAR - FIRST_CHAR; ++i){
-        for (int j = 0; j < LAST_CHAR - FIRST_CHAR - 1 - i; ++j){
-            if (chars[indexes[j]] > chars[indexes[j+1]]){
-                swap(&indexes[j], &indexes[j + 1]);
-            }
-        }
-    }
-    *n_char = chars[indexes[LAST_CHAR - FIRST_CHAR - 1 - char_no]];
-    *cnt = indexes[LAST_CHAR - FIRST_CHAR - 1 - char_no];
+
+    qsort(indices, MAX_CHARS, sizeof (int), cmp);
+
+    *n_char = FIRST_CHAR + indices[char_no - 1];
+    *cnt = count[indices[char_no - 1]];
 }
 
 
 void bigram_count(int bigram_no, int bigram[]) {
+
     char line[MAX_LINE];
-    int i;
+    int indices[MAX_BIGRAMS];
 
-    int ind[MAX_DIGRAMS];
-
-    for(int i = 0; i < MAX_DIGRAMS; i++) {
-        ind[i] = i;
+    for(int i = 0; i < MAX_BIGRAMS; i++) {
+        indices[i] = i;
     }
 
     while (fgets(line, MAX_LINE, stdin)){
-        i = 1;
-        while(line[i] != '\0' && line[i] != '\n'){
-            if (line[i]< LAST_CHAR && line[i] >= FIRST_CHAR && line[i - 1] < LAST_CHAR && line[i - 1] >= FIRST_CHAR){
-                //printf("%c%c \n", line[i - 1], line[i]);
-                count[(line[i - 1] - FIRST_CHAR) * MAX_CHARS + line[i] - FIRST_CHAR]++;
-            }
-            i += 1;
 
+        for (int i = 0; i < strlen(line) - 1; i++) {
+            if (is_char(line[i]) && is_char(line[i + 1])) {
+                count[(line[i] - FIRST_CHAR) * MAX_CHARS + line[i + 1] - FIRST_CHAR]++;
+            }
         }
     }
 
-    qsort(ind, MAX_DIGRAMS, sizeof(int), cmp_di);
-    i = ind[bigram_no];
+    qsort(indices, MAX_BIGRAMS, sizeof(int), cmp_di);
+    int i = indices[bigram_no - 1];
     bigram[0] = FIRST_CHAR + (i / MAX_CHARS);
     bigram[1] = FIRST_CHAR + (i % MAX_CHARS);
     bigram[2] = count[i];
 
 }
 
-
 void find_comments(int *line_comment_counter, int *block_comment_counter) {
+    char line[MAX_LINE];
+    bool is_block = false;
+
+    while (fgets(line, MAX_LINE, stdin)){
+        for (int i = 0; i < strlen(line) - 1; ++i) {
+            if (line[i] == '\0') break;
+
+            if (line[i] == '*' && line[i + 1] =='/' && is_block){
+                is_block = false;
+                *block_comment_counter += 1;
+                i++;
+            }
+            if (line[i] == '/' && line[i + 1] =='/' && !is_block){
+                *line_comment_counter += 1;
+                break;
+            }
+            if (line[i] == '/' && line[i + 1] =='*' && !is_block){
+                is_block = true;
+                i++;
+            }
+
+        }
+    }
 }
-
-// void digram_count(int digram_no, int digram[], FILE *stream){
-//     char last = fgetc(digram_no), next;
-//     int ind[MAX_DIGRAMS];
-
-//     for(int i = 0; i < MAX_DIGRAMS; i++) {
-//         ind[i] = i;
-//     }
-
-//     while(!feof(stream)){
-//         next = fgetc(stream);
-//         count[(last - FIRST_CHAR) * MAX_CHARS + next - FIRST_CHAR]++;
-//         last = next;
-//     }
-
-//     qsort(ind, MAX_DIGRAMS, sizeof(int), cmp_di);
-
-//     int i = ind[digram_no];
-//     digram[0] = FIRST_CHAR + (i / MAX_CHARS);
-//     digram[1] = FIRST_CHAR + (i % MAX_CHARS);
-//     digram[2] = count[i];
-
-// }
-
 
 int read_int() {
     char line[MAX_LINE];
@@ -187,10 +170,8 @@ int read_int() {
 int main(void) {
     int to_do;
     int nl = 0, nw = 0, nc = 0, char_no, n_char, cnt;
-    int line_comment_counter, block_comment_counter;
+    int line_comment_counter = 0, block_comment_counter = 0;
     int bigram[3];
-    //int digram[3];
-
 
 
     to_do = read_int();
@@ -207,9 +188,7 @@ int main(void) {
         case 3: // bigram_count()
             char_no = read_int();
             bigram_count(char_no, bigram);
-            //digram_count(char_no, digram, stdin);
             printf("%c%c %d\n", bigram[0], bigram[1], bigram[2]);
-            //printf("%c%c %d\n", digram[0], digram[1], digram[2]);
             break;
         case 4:
             find_comments(&line_comment_counter, &block_comment_counter);
@@ -221,4 +200,3 @@ int main(void) {
     }
     return 0;
 }
-
