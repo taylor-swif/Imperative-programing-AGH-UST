@@ -117,7 +117,18 @@ void pop_front(List *p_list) {
 
 // Reverse the list
 void reverse(List *p_list) {
-
+    ListElement* ptr = p_list->head;
+    ListElement* shadow = NULL;
+    ListElement* temp = NULL;
+    temp = p_list->tail;
+    p_list->tail = p_list->head;
+    p_list->head = temp;
+    while (ptr != NULL) {
+        temp = ptr->next;
+        ptr->next = shadow;
+        shadow = ptr;
+        ptr = temp;
+    }
 }
 
 // find element in sorted list after which to insert given element
@@ -126,6 +137,10 @@ ListElement* find_insertion_point(const List *p_list, ListElement *p_element) {
 
 // Insert element after 'previous'
 void push_after(List *p_list, void *data, ListElement *previous) {
+    ListElement *element = safe_malloc(sizeof (ListElement));
+    element->data = data;
+    element->next = previous->next;
+    previous->next = element;
 }
 
 // Insert element preserving order
@@ -133,6 +148,19 @@ void insert_in_order(List *p_list, void *p_data) {
     ListElement *element = p_list->head;
     if (element == NULL || p_list->compare_data(element->data, p_data) > 0){
         push_front(p_list, p_data);
+    }
+    // skok?
+    while (element->next != NULL && p_list->compare_data(element->data, p_data) < 0){
+        element = element->next;
+    }
+    if (element->next == NULL){
+        push_back(p_list, p_data);
+    }
+    else if  (p_list->compare_data(element->data, p_data) > 0){
+     return;
+    }
+    else{
+        push_after(p_list, p_data, element);
     }
 }
 
@@ -167,21 +195,43 @@ typedef struct DataWord {
 } DataWord;
 
 void dump_word (const void *d) {
+    printf("%s ", ((DataWord *)d)->word);
+}
+
+void to_lower(char *s){
+    for (char*p = s; *p; p++){
+        *p = tolower(*p);
+    }
+}
+
+void dump_word_lowercase(const void *d){
+    to_lower(((DataWord *) d)->word);
+    printf("%s ", ((DataWord *) d)->word);
 }
 
 void free_word(void *d) {
+    DataWord *ptr = (DataWord *)d;
+    free(ptr->word);
+    free(ptr);
 }
 
 int cmp_word_alphabet(const void *a, const void *b) {
+    return strcmp(((DataWord *)a)->word, ((DataWord *)b)->word);
 }
 
 int cmp_word_counter(const void *a, const void *b) {
+    return ((DataWord *)a)->counter - ((DataWord *)b)->counter;
 }
 
 void modify_word(void *p) {
+    ((DataWord *)p)->counter++;
 }
 
 void *create_data_word(const char *string, int counter) {
+    DataWord *word = safe_malloc(sizeof (DataWord));
+    word->word = safe_strdup(string);
+    word->counter = counter;
+    return word;
 }
 
 // read text, parse it to words, and insert those words to the list.
@@ -189,6 +239,24 @@ void *create_data_word(const char *string, int counter) {
 // (comparator function address). If this address is not NULL the element is
 // inserted according to the comparator. Otherwise, read order is preserved.
 void stream_to_list(List *p_list, FILE *stream, CompareDataFp cmp) {
+    char line[BUFFER_SIZE];
+    const char sep1[]=" \n\t.,:;-!?";
+    char *ptr;
+    DataWord *word;
+    size_t len = 0;
+    while (fgets(line, BUFFER_SIZE, stdin)){
+        for (ptr = strtok(line, sep1); ptr; ptr = strtok(NULL, sep1)){
+            size_t len = strlen(ptr);
+            printf("%s %d \n", ptr, len);
+            word = create_data_word(ptr, 1);
+            if (cmp){
+                to_lower(ptr);
+                insert_in_order(p_list, ptr);
+            }
+            push_back(p_list, word);
+        }
+
+    }
 }
 
 // test integer list
@@ -244,7 +312,7 @@ int main(void) {
             break;
         case 3: // read words, insert into list alphabetically, print words encountered n times
             scanf("%d",&n);
-//            init_list(&list, dump_word_lowercase, free_word, NULL, modify_word);
+            init_list(&list, dump_word_lowercase, free_word, NULL, modify_word);
             stream_to_list(&list, stdin, cmp_word_alphabet);
             list.compare_data = cmp_word_counter;
             DataWord data = { NULL, n };
